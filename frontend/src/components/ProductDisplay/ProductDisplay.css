@@ -1,0 +1,116 @@
+.productdisplay {
+  display: flex;
+  gap: 40px;
+  padding: 30px;
+  max-width: 1100px;
+  margin: auto;
+  
+}
+
+.productdisplay-left {
+  display: flex;
+  gap: 15px;
+  flex: 1;
+}
+
+.productdisplay-img-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.productdisplay-img-list img {
+  width: 70px;
+  height: 90px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.productdisplay-img-list img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.productdisplay-main-img {
+  width: 400px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.productdisplay-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.productdisplay-right h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #222;
+}
+
+.productdisplay-right-star img {
+  width: 18px;
+}
+
+.productdisplay-right-size h1 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.size-options {
+  display: flex;
+  gap: 10px;
+}
+
+.size-options div {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.size-options div:hover {
+  background: #f5f5f5;
+  border-color: #222;
+}
+
+.productdisplay-right button {
+  margin-top: 15px;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background: #222;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.productdisplay-right button:hover {
+  background: #444;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .productdisplay {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .productdisplay-img-list {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .productdisplay-main-img {
+    width: 100%;
+  }
+}
