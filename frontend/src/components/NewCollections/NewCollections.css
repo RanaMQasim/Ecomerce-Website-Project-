@@ -1,29 +1,98 @@
-.new-collections{
-display: flex;
-flex-direction: column;
-align-items: center;
-gap:10px;
-height: 100%;
-margin-bottom: 50px;
+.new-collections {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+  margin-bottom: 50px;
+  padding: 0 16px;
+  box-sizing: border-box;
 }
-.new-collections h1{
-    color: #171717;
-    font-size: 50px;
-    font-weight: 700;
+
+.new-collections h1 {
+  color: #171717;
+  font-size: 50px;
+  font-weight: 700;
+  text-align: center;
+  margin: 10px 0 0 0;
 }
-.new-collections hr{
-    width: 100px;
-    height: 6px;
-    border-radius: 10px;
-    background: #252525;
+
+.new-collections hr {
+  width: 100px;
+  height: 6px;
+  border-radius: 10px;
+  background: #252525;
+  border: none;
+  margin: 10px 0 20px 0;
 }
-.collections {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Ensures 4 equal-width columns */
-    gap: 30px; /* Space between grid items */
-    align-items: center;
-    justify-items: center;
-    width: 100%;
-    max-width: 1024px;
-    margin: 50px auto 0 auto; /* Combines top margin and centers container */
+
+.collections-loading,
+.collections-error,
+.collections-empty {
+  text-align: center;
+  font-size: 18px;
+  color: #555;
+  margin-top: 20px;
+}
+
+.collections-category {
+  width: 100%;
+  max-width: 1024px;
+  margin: 30px auto;
+}
+
+.collections-category > h2 {
+  font-size: 28px;
+  color: #111;
+  margin: 0 0 12px 8px;
+  font-weight: 700;
+}
+
+.collections-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 24px; 
+  align-items: start;
+  justify-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.collections-grid .item {
+  width: 100%;
+  max-width: 320px;
+  box-sizing: border-box;
+}
+
+.collections-grid .item > * {
+  box-sizing: border-box;
+}
+
+.collections-category .collections-empty {
+  padding: 20px 0;
+}
+
+@media (max-width: 1024px) {
+  .new-collections h1 {
+    font-size: 40px;
+  }
+  .collections-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+}
+
+@media (max-width: 600px) {
+  .new-collections h1 {
+    font-size: 32px;
+  }
+  .collections-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .collections-category > h2 {
+    font-size: 22px;
+    margin-left: 6px;
+  }
 }

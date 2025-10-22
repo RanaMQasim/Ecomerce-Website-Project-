@@ -1,67 +1,83 @@
 .list-product {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 95%;
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 20px 40px;
-    border-radius: 8px;
-    background: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 95%;
+  max-width: 1200px;
+  margin: 30px auto;
+  font-family: Arial, sans-serif;
 }
 
 .list-product h1 {
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 24px;
-    font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
 }
 
 .listproduct-format-main {
-    display: grid;
-    grid-template-columns: 0.5fr 2fr 1fr 1fr 1fr 0.5fr;
-    gap: 10px;
-    width: 100%;
-    padding: 12px 0;
-    color: #454545;
-    font-size: 15px;
-    font-weight: 600;
-    border-bottom: 2px solid #eee;
-    text-align: center;
+  display: grid;
+  grid-template-columns: 100px 2fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
-.listproduct-format {
-    font-weight: 400;
-    color: #555;
-    border-bottom: 1px solid #eee;
-    padding: 10px 0;
-}
-
-.listproduct-product-icon {
-    height: 60px;
-    width: 60px;
-    object-fit: cover;
-    border-radius: 4px;
-    margin: auto;
-}
-
-.listproduct-remove-icon {
-    cursor: pointer;
-    height: 20px;
-    width: 20px;
-    margin: auto;
-    opacity: 0.8;
-    transition: 0.2s;
-}
-
-.listproduct-remove-icon:hover {
-    opacity: 1;
-    transform: scale(1.1);
+.listproduct-format-main p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
 }
 
 .listproduct-allproducts {
-    overflow-y: auto;
-    max-height: 500px;
-    width: 100%;
+  margin-top: 10px;
+}
+
+.listproduct-format {
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.listproduct-format:hover {
+  transform: scale(1.01);
+}
+
+.listproduct-product-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.listproduct-remove-btn,
+.listproduct-edit-btn {
+  padding: 5px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.listproduct-remove-btn {
+  background-color: #ff4d4f;
+  color: #fff;
+}
+
+.listproduct-remove-btn:hover {
+  background-color: #e63638;
+}
+
+.listproduct-edit-btn {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+.listproduct-edit-btn:hover {
+  background-color: #0077e6;
 }

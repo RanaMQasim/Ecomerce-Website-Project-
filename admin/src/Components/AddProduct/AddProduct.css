@@ -1,58 +1,118 @@
-.add-product{
-    box-sizing: border-box;
-    width: 100%;
-    max-width: 800px;
-    padding: 30px 50px;
-    margin: 20px 30px;
-    border-radius:6px;
-    background: white;
+.add-product-container {
+    width: 95%;
+    max-width: 700px;
+    margin: 30px auto;
+    font-family: Arial, sans-serif;
 }
-.addproduct-itemfield{
-    width: 100px;
-    color: #7b7b7b;
-    font-size: 16px;
+
+.add-product-form {
+    background-color: #fff;
+    padding: 35px 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
 }
-.addproduct-itemfield input{
-    box-sizing: border-box;
-    width: 100%;
-    height: 50px;
-    border-radius: 4px;
-    padding-left: 15px;
-    border: 1px solid #c3c3c3;
-    outline: none;
-    color: #7b7b7b;
-    font-family: 'Poppins';
-    font-size: 14px;
+
+.add-product-form:hover {
+    transform: translateY(-1px);
 }
-.addproduct-price{
+
+.form-title {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+.form-group {
     display: flex;
-    gap: 40px;
+    flex-direction: column;
+    margin-bottom: 20px;
 }
-.add-product-selector{
-    padding: 10px;
-    width: 100%;
-    height: 50px;
+
+.form-group label {
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input,
+.form-group select {
+    height: 48px;
+    padding: 10px 12px;
     font-size: 14px;
-    color: #7b7b7b;
-    border: 1px solid #7b7b7b;
-    border-radius: 4px;
-}
-.addproduct-thumnail-img{
-height: 120px;
-width: 120px;
-border-radius: 10px;
-object-fit: contain;
-margin: 10px 0px;
-}
-.addproduct-btn{
-    margin-top: 20px;
-    width: 160px;
-    height: 50px;
+    color: #555;
+    border: 1px solid #ccc;
     border-radius: 6px;
-    background: #6079ff;
-    border: none;
-    cursor: pointer;
-    color: white;
-    font-size: 16px;
-    font-weight: 500px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    box-sizing: border-box;
 }
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #1890ff;
+    box-shadow: 0 0 8px rgba(24,144,255,0.2);
+}
+
+.prices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px; 
+}
+
+.image-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.thumbnail {
+    width: 160px;
+    height: 160px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    object-fit: cover;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.thumbnail:hover {
+    border-color: #1890ff;
+    box-shadow: 0 4px 12px rgba(24,144,255,0.15);
+}
+
+
+.upload-text {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #777;
+    text-align: center;
+}
+
+.submit-btn {
+    margin-top: 25px;
+    width: 100%;
+    padding: 14px;
+    background-color: #1890ff;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.submit-btn:hover {
+    background-color: #0077e6;
+    transform: translateY(-1px);
+}
+
+.submit-btn:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+}
+

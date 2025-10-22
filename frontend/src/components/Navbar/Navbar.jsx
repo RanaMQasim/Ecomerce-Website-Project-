@@ -1,35 +1,80 @@
-import React, { useContext, useState } from 'react'
-import './Navbar.css'
-import {Link} from 'react-router-dom';
+import React, { useContext } from "react";
+import "./Navbar.css";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 
-import logo from '../Assets/logo.png'
-import cart_icon from '../Assets/cart_icon.png'
-import { ShopContext } from '../../context/ShopContext';
+import logo from "../Assets/logo.png";
+import cart_icon from "../Assets/cart_icon.png";
+import { ShopContext } from "../../context/ShopContext";
+import useCart from "../../hooks/useCart";
+import { AuthContext } from "../../store/AuthContext";
+
 const Navbar = () => {
-    const[menu,setMenu] =useState("shop");
-    const {getTotalCartItems}= useContext(ShopContext);
+  const shopCtx = useContext(ShopContext);
+  const fallbackGetTotal = shopCtx?.getTotalCartItems ?? (() => 0);
 
+  let cartHook;
+  try {
+    cartHook = useCart();
+  } catch {
+    cartHook = null;
+  }
+
+  const cartItems = cartHook?.items ?? null;
+  const cartCount = cartItems
+    ? cartItems.reduce((acc, it) => acc + (Number(it.quantity) || 0), 0)
+    : fallbackGetTotal();
+
+  const { token, logout } = useContext(AuthContext) || {};
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    if (typeof logout === "function") {
+      logout();
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("auth-token");
+    }
+    navigate("/");
+  };
 
   return (
-    <div className="navbar">  
+    <header className="navbar">
       <div className="nav-logo">
-        <img src={logo} alt=""/>
+        <Link to="/" aria-label="Home">
+          <img src={logo} alt="Forever logo" />
+        </Link>
         <p>FOREVER</p>
       </div>
-      <ul className="nav-menu">
-        <li onClick={()=>{setMenu("shop")}}><Link style={{textDecoration:'none'}} to='/'>Shop</Link>{menu==="shop"?<hr/>:<></>}</li>
-        <li onClick={()=>{setMenu("mens")}}><Link style={{textDecoration:'none'}}to='/mens'>Men</Link>{menu==="mens"?<hr/>:<></>}</li>
-        <li onClick={()=>{setMenu("womens")}}><Link style={{textDecoration:'none'}}to='/womens'>women</Link>{menu==="womens"?<hr/>:<></>}</li>
-        <li onClick={()=>{setMenu("kids")}}><Link style={{textDecoration:'none'}}to='/kids'> kids</Link>{menu==="kids"?<hr/>:<></>}</li>
+
+      <nav>
+        <ul className="nav-menu">
+          <li><NavLink to="/" className={({ isActive }) => (isActive ? "active-link" : "")}>Shop</NavLink></li>
+          <li><NavLink to="/mens" className={({ isActive }) => (isActive ? "active-link" : "")}>Men</NavLink></li>
+          <li><NavLink to="/womens" className={({ isActive }) => (isActive ? "active-link" : "")}>Women</NavLink></li>
+          <li><NavLink to="/kids" className={({ isActive }) => (isActive ? "active-link" : "")}>Kids</NavLink></li>
         </ul>
-        <div className="nav-login-cart">
-          {localStorage.getItem('auth-token')
-          ?<button onClick={()=>{localStorage.removeItem('auth-token');window.location.replace('/')}}>Logout</button>
-        :<Link to='/login'><button>Login</button></Link>}
-          <Link to='/cart'><img src={cart_icon} alt=""/></Link>
-            <div className="nav-cart-count">{getTotalCartItems()}</div>
-        </div>
-    </div>
-  )
-}
+      </nav>
+
+      <div className="nav-login-cart">
+        {token ? (
+          <button onClick={handleLogout}>Logout</button>
+        ) : (
+          <Link to="/login">
+            <button>Login</button>
+          </Link>
+        )}
+
+        <Link to="/cart" className="nav-cart-link" aria-label="Cart">
+          <div className="cart-icon-wrapper">
+            <img src={cart_icon} alt="Cart" className="cart-icon" />
+            {cartCount > 0 && (
+              <span className="nav-cart-count">{cartCount}</span>
+            )}
+          </div>
+        </Link>
+      </div>
+    </header>
+  );
+};
+
 export default Navbar;

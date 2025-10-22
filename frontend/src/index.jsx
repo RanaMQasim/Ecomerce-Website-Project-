@@ -1,12 +1,16 @@
-import React from "react";
-import ReactDom from 'react-dom/client';
-import './index.css'
-import App from './App'
+import React, { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import "./index.css";
+import App from "./App";
 import ShopContextProvider from "./context/ShopContext";
 
-const root= ReactDom.createRoot(document.getElementById('root'));
-root.render(
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
     <ShopContextProvider>
-     <App/>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </ShopContextProvider>
+  </StrictMode>
 );
