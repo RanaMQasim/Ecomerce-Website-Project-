@@ -19,11 +19,13 @@ function toAbsoluteUrl(raw) {
   if (!s) return null;
   if (s.startsWith("http://") || s.startsWith("https://")) return s;
   if (s.startsWith("/")) return API_BASE + s;
-  if (s.startsWith("images/") || s.startsWith("upload/") || s.startsWith("upload\\") ) {
+  if (s.startsWith("images/") || s.startsWith("upload/") || s.startsWith("upload\\")) {
     return `${API_BASE}/${s}`;
   }
   return `${API_BASE}/images/${s}`;
 }
+
+const DEFAULT_SIZES = ["S", "M", "L", "XL", "XXL"];
 
 const ProductDisplay = ({ product: propProduct }) => {
   const [product, setProduct] = useState(null);
@@ -44,49 +46,72 @@ const ProductDisplay = ({ product: propProduct }) => {
       setMainImage("");
       return;
     }
+
     const rawImages =
       propProduct.images ??
       (propProduct.image ? [{ url: propProduct.image, alt: propProduct.name }] : []);
 
     const images = Array.isArray(rawImages)
-      ? rawImages.map((img) => {
-          const urlField = img?.url ?? img; 
-          return {
-            url: toAbsoluteUrl(urlField),
-            alt: img?.alt ?? propProduct.name ?? ""
-          };
-        }).filter(i => i.url) 
+      ? rawImages
+          .map((img) => {
+            const urlField = img?.url ?? img;
+            return {
+              url: toAbsoluteUrl(urlField),
+              alt: img?.alt ?? propProduct.name ?? "",
+            };
+          })
+          .filter((i) => i.url)
       : [];
 
     const normalized = {
       ...propProduct,
       _id: propProduct._id ?? propProduct.id ?? propProduct.productId,
       images,
-      price: Number(propProduct.discountPrice ?? propProduct.discount_price ?? propProduct.new_price ?? propProduct.price ?? 0),
-      originalPrice: Number(propProduct.price ?? propProduct.old_price ?? propProduct.originalPrice ?? 0),
-      size: propProduct.size ?? propProduct.sizes ?? []
+      price: Number(
+        propProduct.discountPrice ??
+          propProduct.discount_price ??
+          propProduct.new_price ??
+          propProduct.price ??
+          0
+      ),
+      originalPrice: Number(
+        propProduct.price ??
+          propProduct.old_price ??
+          propProduct.originalPrice ??
+          0
+      ),
+      size:
+        Array.isArray(propProduct.size) && propProduct.size.length
+          ? propProduct.size
+          : DEFAULT_SIZES,
     };
 
     setProduct(normalized);
     setMainImage(images?.[0]?.url || normalized.image || "");
-    setSelectedSize(normalized.size?.[0] || "");
+    setSelectedSize(normalized.size[0]);
     setQuantity(1);
   }, [propProduct]);
 
-  if (!product) return null; 
+  if (!product) return null;
 
   const isDiscounted =
     product.originalPrice && product.price && product.price < product.originalPrice;
 
   const onAddToCart = () => {
-        const snapshot = {
+    if (!selectedSize) {
+      alert("Please select a size before adding to cart.");
+      return;
+    }
+
+    const snapshot = {
       _id: product._id,
       product: product._id,
       name: product.name,
       price: product.originalPrice || product.price,
       discountPrice: isDiscounted ? product.price : null,
       images: product.images,
-      size: product.size
+      size: selectedSize, 
+      quantity,
     };
 
     addToCart(snapshot, quantity, selectedSize);
@@ -135,38 +160,42 @@ const ProductDisplay = ({ product: propProduct }) => {
 
         <div className="productdisplay-price">
           <div className="price-current">
-            ${ (isDiscounted ? product.price : (product.price || product.originalPrice)).toFixed(2) }
+            $
+            {(
+              isDiscounted
+                ? product.price
+                : product.price || product.originalPrice
+            ).toFixed(2)}
           </div>
           {isDiscounted && (
-            <div className="price-old">
-              ${product.originalPrice.toFixed(2)}
-            </div>
+            <div className="price-old">${product.originalPrice.toFixed(2)}</div>
           )}
         </div>
 
         <div className="productdisplay-right-size">
           <h2>Select Size</h2>
           <div className="productdisplay-size-options">
-            {product.size && product.size.length ? (
-              product.size.map((s) => (
-                <button
-                  key={s}
-                  className={`size-option ${selectedSize === s ? "selected" : ""}`}
-                  onClick={() => setSelectedSize(s)}
-                >
-                  {s}
-                </button>
-              ))
-            ) : (
-              <div className="size-none">One Size</div>
-            )}
+            {product.size.map((s) => (
+              <button
+                key={s}
+                className={`size-option ${
+                  selectedSize === s ? "selected" : ""
+                }`}
+                onClick={() => setSelectedSize(s)}
+              >
+                {s}
+              </button>
+            ))}
           </div>
         </div>
 
         <div className="productdisplay-quantity">
           <label htmlFor="qty">Quantity</label>
           <div className="qty-controls">
-            <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} aria-label="Decrease">
+            <button
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              aria-label="Decrease"
+            >
               -
             </button>
             <input
@@ -180,7 +209,10 @@ const ProductDisplay = ({ product: propProduct }) => {
                 setQuantity(Math.max(1, Math.min(100, v)));
               }}
             />
-            <button onClick={() => setQuantity((q) => Math.min(100, q + 1))} aria-label="Increase">
+            <button
+              onClick={() => setQuantity((q) => Math.min(100, q + 1))}
+              aria-label="Increase"
+            >
               +
             </button>
           </div>

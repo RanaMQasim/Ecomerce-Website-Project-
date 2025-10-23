@@ -2,17 +2,26 @@ const fs = require('fs');
 const path = require('path');
 
 const deleteFile = (relativePath) => {
-  if (!relativePath) return;
-  const filePath = path.isAbsolute(relativePath)
-    ? relativePath
-    : path.join(__dirname, '..', relativePath.replace(/^\//, ''));
-  fs.unlink(filePath, (err) => {
-    if (err) {
-      console.warn('Failed to delete file:', filePath, err.message);
-    } else {
-      console.log('Deleted file:', filePath);
-    }
-  });
-};
+  try {
+    if (!relativePath) return;
+    let filePath = String(relativePath).trim();
+    filePath = filePath.replace(/^https?:\/\/[^\/]+/i, '');
+    filePath = filePath.replace(/^\/+/, '');
+    if (!filePath.startsWith('upload/images/')) {
 
+      filePath = path.join('upload/images', path.basename(filePath));
+    }
+
+    const absolutePath = path.join(__dirname, '..', filePath);
+    fs.rm(absolutePath, { force: true }, (err) => {
+      if (err) {
+        console.warn(' deleteFile warning:', err.message);
+      } else {
+        console.log(' Deleted (or already gone):', absolutePath);
+      }
+    });
+  } catch (err) {
+    console.error('deleteFile error:', err);
+  }
+};
 module.exports = deleteFile;

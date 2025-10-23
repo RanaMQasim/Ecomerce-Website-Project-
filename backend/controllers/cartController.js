@@ -1,24 +1,37 @@
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
-
 const addToCart = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { productId, quantity = 1, selectedSize, price, discountPrice } = req.body;
-    if (!productId || !selectedSize)
-      return res.status(400).json({ success: false, message: 'productId and selectedSize are required' });
+    const { productId, quantity = 1, selectedSize = null, price, discountPrice } = req.body;
+
+    if (!productId)
+      return res.status(400).json({ success: false, message: 'productId is required' });
+    const productExists = await Product.findById(productId);
+    if (!productExists)
+      return res.status(404).json({ success: false, message: 'Product not found' });
 
     let cart = await Cart.findOne({ user: userId });
     if (!cart) cart = new Cart({ user: userId, items: [] });
-
     const existingIndex = cart.items.findIndex(
-      item => String(item.product) === String(productId) && item.selectedSize === selectedSize
+      (item) =>
+        String(item.product) === String(productId) &&
+        (item.selectedSize || null) === (selectedSize || null)
     );
 
     if (existingIndex > -1) {
-      cart.items[existingIndex].quantity = Math.min(100, cart.items[existingIndex].quantity + quantity);
+      cart.items[existingIndex].quantity = Math.min(
+        100,
+        cart.items[existingIndex].quantity + quantity
+      );
     } else {
-      cart.items.push({ product: productId, quantity, selectedSize, price, discountPrice });
+      cart.items.push({
+        product: productId,
+        quantity,
+        selectedSize,
+        price,
+        discountPrice,
+      });
     }
 
     cart.updatedAt = Date.now();
@@ -29,36 +42,43 @@ const addToCart = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
 const getCart = async (req, res) => {
   try {
     const userId = req.user._id;
     const cart = await Cart.findOne({ user: userId }).populate('items.product');
-    if (!cart) return res.json({ success: true, cart: { user: userId, items: [] } });
+    if (!cart)
+      return res.json({ success: true, cart: { user: userId, items: [] } });
     res.json({ success: true, cart });
   } catch (err) {
     console.error('Get cart error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
 const updateItem = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { productId, selectedSize, quantity } = req.body;
+    const { productId, selectedSize = null, quantity } = req.body;
 
-    if (!productId || !selectedSize || quantity == null)
-      return res.status(400).json({ success: false, message: 'productId, selectedSize, and quantity are required' });
+    if (!productId || quantity == null)
+      return res.status(400).json({
+        success: false,
+        message: 'productId and quantity are required',
+      });
 
     const cart = await Cart.findOne({ user: userId });
-    if (!cart) return res.status(404).json({ success: false, message: 'Cart not found' });
+    if (!cart)
+      return res.status(404).json({ success: false, message: 'Cart not found' });
 
     const idx = cart.items.findIndex(
-      i => String(i.product) === String(productId) && i.selectedSize === selectedSize
+      (i) =>
+        String(i.product) === String(productId) &&
+        (i.selectedSize || null) === (selectedSize || null)
     );
-    if (idx === -1) return res.status(404).json({ success: false, message: 'Item not found' });
 
-    cart.items[idx].quantity = quantity;
+    if (idx === -1)
+      return res.status(404).json({ success: false, message: 'Item not found' });
+
+    cart.items[idx].quantity = Math.max(1, Math.min(100, quantity));
     cart.updatedAt = Date.now();
     await cart.save();
 
@@ -68,19 +88,24 @@ const updateItem = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
 const removeItem = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { productId, selectedSize } = req.body;
+    const { productId, selectedSize = null } = req.body;
 
-    if (!productId || !selectedSize)
-      return res.status(400).json({ success: false, message: 'productId and selectedSize are required' });
+    if (!productId)
+      return res.status(400).json({ success: false, message: 'productId is required' });
 
     const cart = await Cart.findOne({ user: userId });
-    if (!cart) return res.status(404).json({ success: false, message: 'Cart not found' });
+    if (!cart)
+      return res.status(404).json({ success: false, message: 'Cart not found' });
 
-    cart.items = cart.items.filter(i => !(String(i.product) === String(productId) && i.selectedSize === selectedSize));
+    cart.items = cart.items.filter(
+      (i) =>
+        !(String(i.product) === String(productId) &&
+          (i.selectedSize || null) === (selectedSize || null))
+    );
+
     cart.updatedAt = Date.now();
     await cart.save();
 
@@ -90,7 +115,6 @@ const removeItem = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
 const mergeCart = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -99,19 +123,25 @@ const mergeCart = async (req, res) => {
     let cart = await Cart.findOne({ user: userId });
     if (!cart) cart = new Cart({ user: userId, items: [] });
 
-    guestItems.forEach(gi => {
+    guestItems.forEach((gi) => {
       const idx = cart.items.findIndex(
-        i => String(i.product) === String(gi.productId) && i.selectedSize === gi.selectedSize
+        (i) =>
+          String(i.product) === String(gi.productId) &&
+          (i.selectedSize || null) === (gi.selectedSize || null)
       );
+
       if (idx > -1) {
-        cart.items[idx].quantity = Math.min(100, cart.items[idx].quantity + (gi.quantity || 1));
+        cart.items[idx].quantity = Math.min(
+          100,
+          cart.items[idx].quantity + (gi.quantity || 1)
+        );
       } else {
         cart.items.push({
           product: gi.productId,
           quantity: gi.quantity || 1,
-          selectedSize: gi.selectedSize,
+          selectedSize: gi.selectedSize || null,
           price: gi.price,
-          discountPrice: gi.discountPrice
+          discountPrice: gi.discountPrice,
         });
       }
     });
@@ -124,11 +154,6 @@ const mergeCart = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
-/*
- Clear cart
- POST /api/cart/clear
-*/
 const clearCart = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -138,11 +163,22 @@ const clearCart = async (req, res) => {
       cart.updatedAt = Date.now();
       await cart.save();
     }
-    res.json({ success: true, cart: { user: userId, items: [] }, message: 'Cart cleared' });
+    res.json({
+      success: true,
+      cart: { user: userId, items: [] },
+      message: 'Cart cleared',
+    });
   } catch (err) {
     console.error('Clear cart error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
-module.exports = { addToCart, getCart, updateItem, removeItem, mergeCart, clearCart };
+module.exports = {
+  addToCart,
+  getCart,
+  updateItem,
+  removeItem,
+  mergeCart,
+  clearCart,
+};

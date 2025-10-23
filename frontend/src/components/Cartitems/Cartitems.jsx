@@ -12,29 +12,15 @@ const Cartitems = () => {
     getTotalCartAmount,
   } = useContext(ShopContext);
 
-  const handleIncrease = (id) => {
-    const item = allCartItems.find((p) => p._id === id);
-    if (item) {
-      const newQty = item.quantity + 1;
-      updateCartItemQuantity
-        ? updateCartItemQuantity(id, newQty)
-        : localStorage.setItem(
-            "fallback_cart_v1",
-            JSON.stringify({ [id]: { ...item, quantity: newQty } })
-          );
-    }
+  const handleIncrease = (id, currentQty) => {
+    const newQty = currentQty + 1;
+    updateCartItemQuantity && updateCartItemQuantity(id, newQty);
   };
 
-  const handleDecrease = (id) => {
-    const item = allCartItems.find((p) => p._id === id);
-    if (item && item.quantity > 1) {
-      const newQty = item.quantity - 1;
-      updateCartItemQuantity
-        ? updateCartItemQuantity(id, newQty)
-        : localStorage.setItem(
-            "fallback_cart_v1",
-            JSON.stringify({ [id]: { ...item, quantity: newQty } })
-          );
+  const handleDecrease = (id, currentQty) => {
+    if (currentQty > 1) {
+      const newQty = currentQty - 1;
+      updateCartItemQuantity && updateCartItemQuantity(id, newQty);
     }
   };
 
@@ -44,7 +30,7 @@ const Cartitems = () => {
     <div className="cartitems">
       <div className="cartitems-format-main">
         <p>Product</p>
-        <p>Title</p>
+        <p>Details</p>
         <p>Price</p>
         <p>Quantity</p>
         <p>Total</p>
@@ -56,7 +42,7 @@ const Cartitems = () => {
       {allCartItems.length > 0 ? (
         allCartItems.map((item, index) => {
           const price = Number(item.discountPrice ?? item.price ?? 0);
-          const qty = Number(item.quantity ?? 0);
+          const qty = Number(item.quantity ?? 1);
           const total = price * qty;
 
           return (
@@ -67,17 +53,21 @@ const Cartitems = () => {
                   alt={item.name}
                   className="carticon-product-icon"
                 />
-                <p>{item.name}</p>
-                <p>${price.toFixed(2)}</p>
-
-                <div className="cartitems-quantity">
-                  <button onClick={() => handleDecrease(item._id)}>-</button>
-                  <span>{qty}</span>
-                  <button onClick={() => handleIncrease(item._id)}>+</button>
+                <div className="cartitem-details">
+                  <p className="cartitem-name">{item.name}</p>
+                  {item.selectedSize && (
+                    <p className="cartitem-size">
+                      Size: <strong>{item.selectedSize}</strong>
+                    </p>
+                  )}
                 </div>
-
+                <p>${price.toFixed(2)}</p>
+                <div className="cartitems-quantity">
+                  <button onClick={() => handleDecrease(item._id, qty)}>-</button>
+                  <span>{qty}</span>
+                  <button onClick={() => handleIncrease(item._id, qty)}>+</button>
+                </div>
                 <p>${total.toFixed(2)}</p>
-
                 <img
                   className="cartitems-remove-icon"
                   src={remove_icon}
@@ -97,7 +87,6 @@ const Cartitems = () => {
           </p>
         </div>
       )}
-
       <div className="cartitems-down">
         <div className="cartitems-total">
           <h1>Cart Summary</h1>

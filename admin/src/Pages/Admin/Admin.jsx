@@ -12,11 +12,11 @@ const Admin = () => {
       <Sidebar />
       <div className="admin-content">
         <Routes>
-          <Route index element={<AddProduct />} />
+          <Route index element={<Navigate to="/admin/addproduct" replace />} />
           <Route path="addproduct" element={<AddProduct />} />
-          <Route path="listproduct" element={<ListProduct />} /> 
+          <Route path="listproduct" element={<ListProduct />} />
           <Route path="edit-product/:id" element={<EditProduct />} />
-          <Route path="*" element={<Navigate to="addproduct" replace />} />
+          <Route path="*" element={<Navigate to="/admin/addproduct" replace />} />
         </Routes>
       </div>
     </div>
